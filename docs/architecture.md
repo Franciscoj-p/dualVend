@@ -2,40 +2,42 @@
 
 ## 1. Organización de Carpetas
 
-El código está estructurado en carpetas según las áreas de trabajo del equipo, manteniendo las funciones simples de C++ para Arduino:
+El código está estructurado en módulos para que el equipo pueda trabajar sin pisarse el código, usando funciones simples de C++ para Arduino:
 
 ```text
 src/
-├── main.cpp                 --> El cerebro: setup(), loop() y coordinación de botones
-├── tipos.h                  --> Modos/pantallas de la máquina (enum Mode)
+├── main.cpp                 --> Orquestador: setup(), loop() y máquina de estados finitos (FSM)
+├── tipos.h                  --> Modos de la FSM (Modo) y botones físicos (Boton)
+│
+├── herramientas/            --> Herramientas de hardware compartidas (disponibles en 'main')
+│   ├── pantalla.h / .cpp    --> Control del LCD 16x2 I2C (mostrar mensajes, limpiar)
+│   └── entrada.h / .cpp     --> Lectura de pulsadores P1..Pext y teclado matricial 4x4
 │
 ├── logica/
-│   ├── interfaz/
-│   │   ├── pantalla.h / .cpp   --> Control y mensajes de la pantalla LCD 16x2 I2C
-│   │   ├── entrada.h / .cpp    --> Lectura de los 4 botones (con antirrebote)
-│   │   └── productos.h / .cpp  --> Nombres, precios y selección de productos
+│   ├── seleccion/           --> Catálogo de productos, códigos, carrito y stock (Terminado)
+│   │   └── seleccion.h / .cpp
 │   │
-│   └── pagos/
-│       └── pagos.h / .cpp      --> Saldo, recargas de +$500, cobro y devolución
+│   └── pagos/               --> Lógica de cobro, ingreso de saldo y validación (A cargo de Pagos)
+│       └── pagos.h / .cpp
 │
 ├── solidos/
-│   └── solidos.h / .cpp        --> Motores y espirales para entrega de snacks
+│   └── solidos.h / .cpp     --> Control de motores y espirales de snacks (A cargo de Sólidos)
 │
 └── liquidos/
-    └── liquidos.h / .cpp       --> Bomba peristáltica y electroválvula para bebidas
+    └── liquidos.h / .cpp    --> Control de bombas y válvulas de bebidas (A cargo de Líquidos)
 ```
 
 ---
 
 ## 2. Repartición del Trabajo por Integrantes
 
-- **Persona 1 (Interfaz y Selección):**
-  - Trabaja en `src/logica/interfaz/` (`pantalla.cpp`, `entrada.cpp`, `productos.cpp`).
-- **Persona 2 (Dinero y Pagos):**
-  - Trabaja en `src/logica/pagos/` (`pagos.cpp`).
-- **Grupo de Sólidos:**
-  - Trabaja en `src/solidos/` (`solidos.cpp`).
-- **Grupo de Líquidos:**
-  - Trabaja en `src/liquidos/` (`liquidos.cpp`).
-- **Integración general:**
-  - Se orquesta desde `src/main.cpp`.
+- **Herramientas Compartidas (`src/herramientas/`):**
+  - Base común disponible en `main` para que todos los módulos la usen sin duplicar código.
+- **Módulo de Selección (`src/logica/seleccion/`):**
+  - Manejo de catálogo, códigos de producto, acumulación de carrito de compras y verificación de stock.
+- **Módulo de Pagos (`src/logica/pagos/`):**
+  - Recibe el total a cobrar desde Selección (`obtenerTotalCarrito()`), gestiona el cobro y comunica el resultado.
+- **Módulos Físicos (`src/solidos/` y `src/liquidos/`):**
+  - Reciben la orden de dispensar los productos vendidos y confirman la entrega para descontar el stock.
+- **Orquestador (`src/main.cpp`):**
+  - Conecta la máquina de estados y las transiciones entre módulos.

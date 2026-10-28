@@ -27,29 +27,32 @@ Este documento detalla la lista de componentes, especificaciones técnicas, cone
     - **SDA:** Pin analógico **A4** (Arduino Uno).
     - **SCL:** Pin analógico **A5** (Arduino Uno).
 
-### 1.3. Dispositivos de Entrada (Pulsadores Frontales)
+### 1.3. Dispositivos de Entrada (Pulsadores Frontales y Botón de Cancelación)
 - **Componente:** 4 Pulsadores táctiles momentáneos (Normalmente Abiertos / Push Buttons).
 - **Configuración eléctrica:** Conexión con resistencia pull-up interna (`INPUT_PULLUP`).
   - No requiere resistencias externas adicionales.
   - Un terminal del pulsador va al pin de Arduino; el terminal opuesto va directamente a GND.
   - Al pulsar, el nivel lógico pasa a `LOW` (0V).
-- **Mapeo de pines:**
-  - **P1 (Siguiente Producto / Confirmar Saldo):** Pin Digital **3**.
-  - **P2 (Recarga +$500 / Seleccionar NFC):** Pin Digital **4**.
-  - **P3 (Confirmar recarga / Devolver saldo):** Pin Digital **5**.
-  - **P4 (Menú principal / Salir acumulando saldo):** Pin Digital **6**.
+- **Mapeo de pines actual:**
+  - **P1 (Iniciar / Anterior / Agregar otro producto):** Pin Digital **2**.
+  - **P2 (Siguiente producto):** Pin Digital **3**.
+  - **P3 (Confirmar producto / Ir a Pagar):** Pin Digital **4**.
+  - **Pext (Pulsador externo de Cancelación / Aborto general):** Pin Digital **5**.
 
 ---
 
-## 2. Alternativa de Entrada Prevista: Teclado Matricial
+## 2. Teclado Matricial 4x4 (Membrana)
 
-Para superar la limitación de 4 pulsadores y permitir marcación directa de códigos de producto (ej. "12", "03"), recargas numéricas arbitrarias o menús de servicio técnico:
+Para marcación directa del código de 2 dígitos de cada producto (ej. "01", "02", "03"):
 
-### 2.1. Teclado Matricial 4x4 (Membrana o Pulsadores)
-- **Distribución de teclas:** 16 teclas (dígitos `0` al `9`, letras `A`, `B`, `C`, `D`, asterisco `*`, numeral `#`).
-- **Opción de conexión recomendada:**
-  - **Opción A (Expansor I2C PCF8574 - Recomendada):** Permite conectar las 8 líneas del teclado al mismo bus I2C (pines A4 y A5) sin consumir pines digitales adicionales del Arduino Uno.
-  - **Opción B (Conexión Directa en matriz):** Consume 8 pines digitales (4 filas + 4 columnas), ej. Pines 7 al 13 y Pin 2.
+- **Componente:** Teclado matricial de membrana 4x4 (16 teclas: '0'..'9', 'A'..'D', '*', '#').
+- **Conexión directa en Arduino Uno:**
+  - **Filas (R1 a R4):** Pines Digitales **6, 7, 8, 9**.
+  - **Columnas (C1 a C4):** Pines Digitales **10, 11, 12, 13**.
+- **Equivalencias de teclas rápidas:**
+  - Las teclas `'0'` a `'9'` marcan el código del producto directamente.
+  - La tecla `'*'` limpia o borra el código que se estaba digitando.
+  - La tecla `'#'` equivale al pulsador **P3** (confirmar).
 
 ---
 
