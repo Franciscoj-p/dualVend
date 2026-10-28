@@ -33,3 +33,4 @@ void mostrarMensajeTemporal(const char* linea1, const char* linea2, unsigned int
   mostrarLineas(linea1, linea2);
   delay(tiempoMs);
 }
+

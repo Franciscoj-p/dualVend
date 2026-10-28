@@ -16,3 +16,4 @@ void limpiarPantalla();
 void mostrarMensajeTemporal(const char* linea1, const char* linea2, unsigned int tiempoMs);
 
 #endif
+
