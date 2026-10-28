@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "author": "DualVend Team",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 210,
+      "left": 20,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": -10,
+      "left": 20,
+      "attrs": { "pins": "i2c" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 30,
+      "left": 380,
+      "attrs": { "color": "green", "label": "P1 (Prod / Saldo)" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn2",
+      "top": 100,
+      "left": 380,
+      "attrs": { "color": "blue", "label": "P2 (Recarga / NFC)" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn3",
+      "top": 170,
+      "left": 380,
+      "attrs": { "color": "yellow", "label": "P3 (Conf / Devolver)" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn4",
+      "top": 240,
+      "left": 380,
+      "attrs": { "color": "red", "label": "P4 (Menu / Salir)" }
+    }
+  ],
+  "connections": [
+    [ "lcd:GND", "uno:GND.1", "black", [ "h-25", "v145", "h136" ] ],
+    [ "lcd:VCC", "uno:5V", "red", [ "h-40", "v405", "h188" ] ],
+    [ "lcd:SDA", "uno:A4", "cyan", [ "h-50", "v405", "h294" ] ],
+    [ "lcd:SCL", "uno:A5", "purple", [ "h-60", "v405", "h314" ] ],
+
+    [ "btn1:1.l", "uno:3", "green", [ "h-15", "v115", "h-120" ] ],
+    [ "btn2:1.l", "uno:4", "blue", [ "h-25", "v55", "h-120" ] ],
+    [ "btn3:1.l", "uno:5", "gold", [ "h-35", "v-5", "h-120" ] ],
+    [ "btn4:1.l", "uno:6", "orange", [ "h-45", "v-65", "h-120" ] ],
+
+    [ "btn1:2.r", "btn2:2.r", "black", [ "h25", "v70" ] ],
+    [ "btn2:2.r", "btn3:2.r", "black", [ "h25", "v70" ] ],
+    [ "btn3:2.r", "btn4:2.r", "black", [ "h25", "v70" ] ],
+    [ "btn4:2.r", "uno:GND.2", "black", [ "h25", "v165", "h-290" ] ]
+  ],
+  "dependencies": {}
+}

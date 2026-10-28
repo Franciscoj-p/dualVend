@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "PlatformIO: Build (Arduino Uno)",
+      "command": "pio run",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "PlatformIO: Clean & Rebuild",
+      "command": "pio run --target clean && pio run",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "type": "shell",
+      "label": "PlatformIO: Upload to Board",
+      "command": "pio run --target upload",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "type": "shell",
+      "label": "PlatformIO: Serial Monitor",
+      "command": "pio device monitor",
+      "problemMatcher": []
+    }
+  ]
+}
+
