@@ -2,22 +2,40 @@
 #define PAGOS_H
 
 #include <Arduino.h>
+#include "tipos.h"
 
-// Pone en 0 el monto que se va a recargar
-void reiniciarRecarga();
+/**
+ * ==============================================================================
+ * CONTRATO DEL MÓDULO DE PAGOS (src/logica/pagos/)
+ * ==============================================================================
+ * A cargo del: Integrante de Pagos
+ * 
+ * ¿Qué recibe de Selección / main.cpp?
+ * - iniciarPago(uint32_t montoTotal): Recibe el monto exacto en pesos que el
+ *   cliente debe pagar según los productos acumulados en el carrito.
+ * 
+ * ¿Qué debe hacer adentro de procesarPago(boton, tecla)?
+ * - Controlar la pantalla LCD 16x2 mostrando el total y el saldo ingresado.
+ * - Leer los sensores o lectores de pago (monedero, billetero, lector RFID/NFC, etc.).
+ * - Gestionar el saldo acumulado del usuario.
+ * 
+ * ¿Qué debe devolver a main.cpp?
+ * - PAGO_EN_CURSO: El cliente aún no ha completado el valor requerido.
+ * - PAGO_EXITOSO: El cliente cubrió la totalidad del dinero. main.cpp pasará
+ *   a la entrega física de productos.
+ * - PAGO_CANCELADO: El cliente canceló o se agotó el tiempo. main.cpp devolverá
+ *   la máquina a la pantalla de bienvenida.
+ * ==============================================================================
+ */
 
-// Suma $500 al monto de recarga (si pasa de 20.000 vuelve a 0)
-void sumar500();
+// Inicia la sesión de cobro con el total a pagar en pesos
+void iniciarPago(uint32_t montoTotal);
 
-// Intenta cobrar el precio del producto. Devuelve true si alcanzó el saldo, false si no.
-bool intentarCobrar(uint32_t precio);
+// Procesa un ciclo de cobro (lee sensores/entradas, actualiza LCD)
+ResultadoPago procesarPago(Boton boton, char tecla);
 
-// Devuelve el saldo restante (lo pone en 0). Devuelve true si había saldo, false si estaba en 0.
-bool devolverSaldo();
-
-// Funciones para consultar los valores actuales y mostrarlos en pantalla
-uint32_t obtenerMontoRecarga();
-uint32_t obtenerSaldoTarjeta();
+// Funciones de consulta útiles para pruebas
+uint32_t obtenerMontoTotalACobrar();
+uint32_t obtenerSaldoIngresado();
 
 #endif
-

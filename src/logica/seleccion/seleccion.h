@@ -2,33 +2,32 @@
 #define SELECCION_H
 
 #include <Arduino.h>
+#include "tipos.h"
 
-// Inicializa o reinicia el módulo de selección de productos
+/**
+ * ==============================================================================
+ * MÓDULO DE SELECCIÓN DE PRODUCTOS (src/logica/seleccion/)
+ * ==============================================================================
+ * Responsabilidad:
+ * - Mostrar en el LCD 16x2 el catálogo de productos con precios y stock.
+ * - Permitir la navegación con pulsadores (P1 anterior, P2 siguiente).
+ * - Permitir la marcación directa por teclado matricial ("01", "02", etc.).
+ * - Gestionar el carrito de compras y preguntar si desea agregar otro producto.
+ * 
+ * Contrato con main.cpp:
+ * - iniciarSeleccion(): Prepara el estado interno y la pantalla al entrar al modo.
+ * - procesarSeleccion(boton, tecla): Se ejecuta en cada ciclo de loop() mientras
+ *   modoActual == MODO_SELECCION. Dibuja su propia interfaz y devuelve:
+ *     - SELECCION_EN_CURSO: El cliente sigue navegando.
+ *     - SELECCION_LISTO_IR_A_PAGOS: El cliente terminó y pasa a Cobro.
+ *     - SELECCION_CANCELADA: El cliente canceló la operación.
+ * ==============================================================================
+ */
+
+// Inicializa el módulo de selección (cursor en producto 0, pantalla lista)
 void iniciarSeleccion();
 
-// Procesa una tecla numérica ('0'..'9') ingresada en el teclado matricial
-void procesarTeclaCodigo(char tecla);
-
-// Navegación con pulsadores P1 (Anterior) y P2 (Siguiente)
-void siguienteProducto();
-void anteriorProducto();
-
-// Intenta agregar una unidad del producto actual al carrito (con P3)
-// Devuelve true si se agregó con éxito, false si no hay stock disponible
-bool agregarProductoAlCarrito();
-
-// Consultas para mostrar en la pantalla LCD 16x2
-const char* obtenerCodigoActual();
-const char* obtenerNombreActual();
-uint32_t obtenerPrecioActual();
-uint8_t obtenerStockDisponibleActual();
-uint8_t obtenerEnCarritoActual();
-
-// Información del pedido / carrito completo
-uint32_t obtenerTotalCarrito();
-uint8_t obtenerCantidadTotalEnCarrito();
-void vaciarCarrito();
-void descontarStockVendido();
+// Procesa un ciclo de selección con las entradas actuales
+ResultadoSeleccion procesarSeleccion(Boton boton, char tecla);
 
 #endif
-

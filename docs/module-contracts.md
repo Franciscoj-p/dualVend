@@ -1,121 +1,84 @@
 # Contratos de Módulos e Integración — DualVend
 
-Este documento sirve como guía oficial para el equipo sobre cómo utilizar las herramientas compartidas (`src/herramientas/`) y cómo se comunican los módulos de **Selección**, **Pagos**, y **Dispensación (Sólidos/Líquidos)**.
+Este documento sirve como guía oficial para el equipo sobre cómo interactúan los módulos con `main.cpp`, qué datos comparten y qué funciones deben implementar.
 
 ---
 
-## 1. Herramientas Compartidas (`src/herramientas/`)
+## 1. Datos Compartidos (`src/datos/inventario.h`)
 
-Cualquier módulo (Selección, Pagos, etc.) puede incluir y utilizar estas funciones directamente.
+La fuente de la verdad para productos, precios, disponibilidad y compras activas.
 
-### A. Pantalla LCD 16x2 I2C (`pantalla.h`)
-
-Permite mostrar texto de 16 columnas x 2 filas en el display:
-
+### Estructura `Producto`:
 ```cpp
-#include "herramientas/pantalla.h"
+enum TipoProducto { TIPO_SOLIDO, TIPO_LIQUIDO };
 
-// 1. Mostrar dos líneas de texto fijas (máx 16 caracteres por línea)
-mostrarLineas("Total a Pagar:  ", "$3500           ");
-
-// 2. Mostrar un mensaje temporal con pausa automática (en milisegundos)
-mostrarMensajeTemporal(" Pago Exitoso!  ", " Despachando... ", 1500);
-
-// 3. Limpiar pantalla
-limpiarPantalla();
+struct Producto {
+  const char* codigo;      // "01", "02", "03"
+  const char* nombre;      // "Papas", "Galletas", "Gaseosa"
+  uint16_t precio;         // Precio en pesos
+  TipoProducto tipo;       // TIPO_SOLIDO o TIPO_LIQUIDO
+  uint8_t stock;           // Stock disponible físico
+  uint8_t enCarrito;       // Unidades pedidas en la compra actual
+};
 ```
 
-> **Consejo**: Siempre formatea tus cadenas con `snprintf()` o usa exactamente 16 caracteres rellenando con espacios para evitar que queden caracteres sucios de pantallas anteriores.
+### Funciones Principales:
+- `Producto* obtenerProductoPorIndice(uint8_t indice)`: Obtiene el puntero al producto para leer su nombre, precio, tipo y stock.
+- `int8_t buscarIndicePorCodigo(const char* codigo)`: Busca un código tecleado (ej. `"01"`) y retorna su índice (o `-1` si no existe).
+- `bool agregarAlCarrito(uint8_t indice)`: Incrementa en 1 la cantidad pedida si hay stock disponible.
+- `uint32_t calcularTotalCarrito()`: Suma total en pesos a cobrar para el módulo de Pagos.
+- `void vaciarCarrito()`: Restaura el carrito a 0 unidades sin alterar el stock (si el usuario cancela con `Pext`).
+- `void descontarStockVendido()`: Descuenta definitivamente las unidades del inventario tras la entrega física exitosa.
 
 ---
 
-### B. Entradas: Pulsadores y Teclado (`entrada.h`)
+## 2. Herramientas Compartidas (`src/herramientas/`)
 
-Lee tanto los 4 pulsadores físicos como el teclado matricial 4x4:
-
-```cpp
-#include "herramientas/entrada.h"
-
-// 1. Leer pulsadores frontales (devuelve Boton: BOTON_NINGUNO, BOTON_P1, BOTON_P2, BOTON_P3, BOTON_PEXT)
-Boton b = leerPulsador();
-
-// 2. Leer teclado matricial (devuelve char: '0'..'9', 'A'..'D', '*', '#' o '\0' si no se pulsó nada)
-char tecla = leerTeclado();
-```
+- **Pantalla (`pantalla.h`):**
+  - `mostrarLineas(linea1, linea2)`: Muestra dos líneas en el LCD 16x2.
+  - `mostrarMensajeTemporal(linea1, linea2, duracionMs)`: Muestra un mensaje con pausa automática.
+- **Entradas (`entrada.h`):**
+  - `leerPulsador()`: Devuelve `BOTON_P1`, `BOTON_P2`, `BOTON_P3`, `BOTON_PEXT` o `BOTON_NINGUNO`.
+  - `leerTeclado()`: Devuelve el caracter del teclado matricial (`'0'..'9'`, `'*'`, `'#'`) o `'\0'`.
 
 ---
 
-## 2. Módulo de Selección de Productos (`src/logica/seleccion/`)
+## 3. Contrato del Módulo de Selección (`src/logica/seleccion/`)
 
-Maneja el catálogo ("01", "02", "03"), la disponibilidad de stock y el carrito de compras del usuario.
+El módulo de selección controla su propia pantalla LCD y su lógica interna de navegación.
 
-### Funciones disponibles (`seleccion.h`):
-
-| Función | Tipo de Retorno | Descripción |
-| :--- | :--- | :--- |
-| `iniciarSeleccion()` | `void` | Reinicia el cursor de selección al primer producto. |
-| `procesarTeclaCodigo(tecla)` | `void` | Procesa dígitos '0'..'9' o '*' para buscar productos por código. |
-| `siguienteProducto()` | `void` | Avanza cíclicamente al siguiente producto. |
-| `anteriorProducto()` | `void` | Retrocede cíclicamente al producto anterior. |
-| `agregarProductoAlCarrito()` | `bool` | Agrega 1 unidad al carrito si hay stock disponible. Retorna `false` si no hay stock. |
-| `obtenerCodigoActual()` | `const char*` | Devuelve el código ("01", "02", etc.) o el dígito en curso ("0-"). |
-| `obtenerNombreActual()` | `const char*` | Devuelve el nombre ("Papas", "Galletas", "Gaseosa"). |
-| `obtenerPrecioActual()` | `uint32_t` | Devuelve el precio individual del producto seleccionado. |
-| `obtenerStockDisponibleActual()` | `uint8_t` | Devuelve el stock restante (stock físico - unidades en carrito). |
-| `obtenerTotalCarrito()` | `uint32_t` | **Entrega a Pagos:** Total acumulado en pesos de todos los productos en el carrito. |
-| `obtenerCantidadTotalEnCarrito()` | `uint8_t` | Cantidad total de artículos agregados en la compra. |
-| `vaciarCarrito()` | `void` | Deja el carrito en 0 unidades sin afectar el stock de la máquina. |
-| `descontarStockVendido()` | `void` | **Entrega a Sólidos/Líquidos:** Descuenta formalmente las unidades vendidas del stock y limpia el carrito. |
+- `void iniciarSeleccion()`: Se invoca al entrar a `MODO_SELECCION`. Prepara el cursor en el primer producto.
+- `ResultadoSeleccion procesarSeleccion(Boton boton, char tecla)`:
+  - Maneja la navegación con P1/P2 y la marcación directa en el teclado matricial.
+  - Pregunta si desea agregar otro producto o ir a pagar.
+  - Retorna `SELECCION_EN_CURSO` mientras el usuario elija productos.
+  - Retorna `SELECCION_LISTO_IR_A_PAGOS` cuando el usuario confirma con P3 en la pantalla de carrito.
 
 ---
 
-## 3. Contrato de Integración con el Módulo de Pagos (`src/logica/pagos/`)
+## 4. Contrato del Módulo de Pagos (`src/logica/pagos/`)
 
-### ¿Cómo recibe el control el Módulo de Pagos?
-En `src/main.cpp`, cuando el usuario termina de armar su pedido y confirma con **P3**, la máquina de estados pasa a:
-```cpp
-modoActual = MODO_COBRO;
-```
+El integrante de Pagos es dueño absoluto de su propia pantalla y lectura de dinero:
 
-### ¿Qué datos necesita Pagos de Selección?
-Pagos simplemente llama a:
-```cpp
-uint32_t totalACobrar = obtenerTotalCarrito();
-```
-Esa es la cantidad exacta de dinero que el cliente debe ingresar o acreditar.
-
-### ¿Qué debe hacer Pagos durante `MODO_COBRO`?
-Actualmente en `main.cpp` hay una simulación temporal donde presionar **P3** aprueba el cobro. 
-**El integrante a cargo de Pagos debe reemplazar ese bloque simulado por su propia lógica:**
-
-1. **Mostrar su propia interfaz en el LCD:**
-   Usar `mostrarLineas()` para mostrar al usuario cuánto debe y qué saldo lleva ingresado:
-   ```cpp
-   // Ejemplo de lo que Pagos puede mostrar:
-   char l1[17], l2[17];
-   snprintf(l1, sizeof(l1), "Total: $%lu", totalACobrar);
-   snprintf(l2, sizeof(l2), "Saldo: $%lu", saldoIngresado);
-   mostrarLineas(l1, l2);
-   ```
-2. **Procesar el hardware de cobro:**
-   Leer monedas, billetes, tarjeta RFID/NFC o pulsadores de prueba de pagos.
-3. **Resultado del cobro:**
-   - **Si el pago se completa con éxito:**
-     - Mostrar mensaje de aprobación (`mostrarMensajeTemporal(" Pago Exitoso!  ", " Despachando... ", 1500);`).
-     - Cambiar el estado a entrega: `modoActual = MODO_ENTREGA;`.
-   - **Si el usuario presiona Cancelar (`Pext`) o hay timeout:**
-     - Devolver el dinero ingresado si corresponde.
-     - Llamar a `vaciarCarrito()` para cancelar el pedido.
-     - Regresar a la bienvenida: `modoActual = MODO_BIENVENIDA;`.
+- `void iniciarPago(uint32_t montoTotal)`:
+  - Recibe el total en pesos a cobrar calculado por `calcularTotalCarrito()`.
+- `ResultadoPago procesarPago(Boton boton, char tecla)`:
+  - Muestra en el LCD el total y el saldo ingresado (`mostrarLineas()`).
+  - Lee sensores o botones de dinero (en la simulación actual: P1 suma $500, P3 aprueba).
+  - Retorna `PAGO_EN_CURSO` mientras falte dinero.
+  - Retorna `PAGO_EXITOSO` cuando se complete el valor total.
+  - Retorna `PAGO_CANCELADO` si el usuario decide cancelar o hay tiempo agotado.
 
 ---
 
-## 4. Contrato con Dispensadores Físicos (`src/solidos/` y `src/liquidos/`)
+## 5. Contrato de Dispensación Física (`src/solidos/` y `src/liquidos/`)
 
-Cuando `modoActual == MODO_ENTREGA`:
-1. Se activan los motores correspondientes a los productos pagados.
-2. Una vez completado el giro o servido de líquido, se llama a:
-   ```cpp
-   descontarStockVendido();
-   ```
-3. La máquina vuelve automáticamente a `MODO_BIENVENIDA` lista para el próximo cliente.
+El ciclo de entrega física recorre el carrito y delega en cada subsistema según el tipo de producto:
+
+- `bool dispensarSolido(const char* nombreProducto)`:
+  - Invocado para productos marcados como `TIPO_SOLIDO`.
+  - Acciona el motor de la espiral y espera confirmación de caída.
+- `bool dispensarLiquido(const char* nombreProducto)`:
+  - Invocado para productos marcados como `TIPO_LIQUIDO`.
+  - Activa la bomba dosificadora o electroválvula por volumen/tiempo.
+- Al terminar todas las dispensaciones, `main.cpp` llama a `descontarStockVendido()` y regresa a `MODO_BIENVENIDA`.
