@@ -3,17 +3,21 @@
 
 #include <Arduino.h>
 
-// Estados (pantallas) de la máquina expendedora
-enum Mode { 
-  MODE_MENU,               // Menú principal: muestra producto y precio
-  MODE_ADD_AMOUNT,         // Pantalla para recargar de a +$500
-  MODE_READY_TO_READ,      // Confirmación del monto recargado
-  MODE_PAY_CHOICES,        // Elegir método: Pagar con Saldo o Pago NFC
-  MODE_TAP_FOR_NFC,        // Simulando acercar tarjeta NFC
-  MODE_RESULT_PAY,         // Pago exitoso y muestra saldo restante
-  MODE_REFUND_OR_LEAVE,    // Elegir si devolver saldo o dejarlo guardado
-  MODE_NFC_SUCCESS         // Pago NFC exitoso
+// Pulsadores físicos del sistema
+enum Boton {
+  BOTON_NINGUNO = 0,
+  BOTON_P1,          // Pulsador 1
+  BOTON_P2,          // Pulsador 2
+  BOTON_P3,          // Pulsador 3
+  BOTON_PEXT         // Pulsador externo de cancelación/aborto
+};
+
+// Modos principales de la máquina expendedora
+enum Modo {
+  MODO_BIENVENIDA,   // Pantalla inicial de bienvenida
+  MODO_SELECCION,    // Selección de productos con código y carrito
+  MODO_COBRO,        // Ingreso y cobro de saldo
+  MODO_ENTREGA       // Activación de dispensadores físicos
 };
 
 #endif
-
