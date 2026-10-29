@@ -37,8 +37,8 @@ static void dibujarPantallaPagos() {
   // Línea 1: Cobro: $3500
   snprintf(linea1, sizeof(linea1), "Cobro: $%7lu", (unsigned long)totalACobrar);
 
-  // Línea 2: Saldo:$1000 P3:Ok (o el texto que desees mostrar)
-  snprintf(linea2, sizeof(linea2), "Sal:$%-4lu  P3:Ok", (unsigned long)saldoIngresado);
+  // Línea 2: Saldo:$1000 C:Ok (o el texto que desees mostrar)
+  snprintf(linea2, sizeof(linea2), "Sal:$%-4lu  C:Pagar", (unsigned long)saldoIngresado);
 
   mostrarLineas(linea1, linea2);
 }
@@ -48,8 +48,8 @@ static void dibujarPantallaPagos() {
 // Responsable: Integrante de Pagos
 // 
 // IMPLEMENTACIÓN ACTUAL (SIMULACIÓN TEMPORAL):
-// - Pulsar P1 o la tecla '1' simula el ingreso de $500 pesos.
-// - Pulsar P3 simula la aprobación inmediata del pago.
+// - Pulsar tecla 'A' o tecla '1' simula el ingreso de $500 pesos.
+// - Pulsar tecla 'C' simula la aprobación inmediata del pago.
 // 
 // CÓMO REEMPLAZAR ESTE BLOQUE CUANDO TENGAS EL HARDWARE REAL:
 // 1. Si usas monedero mecánico o electrónico por pulsos:
@@ -64,16 +64,16 @@ static void dibujarPantallaPagos() {
 //    - Devuelve el saldo ingresado físicamente y retorna PAGO_CANCELADO.
 // ==============================================================================
 ResultadoPago procesarPago(Boton boton, char tecla) {
-  // Simulación con pulsador P1 o tecla '1' (+ $500)
-  if (boton == BOTON_P1 || tecla == '1') {
+  // Simulación con tecla 'A' o tecla '1' (+ $500)
+  if (boton == BOTON_A || tecla == '1') {
     saldoIngresado += 500;
     pantallaSucia = true;
     Serial.print(F("[PAGOS] Moneda ingresada: +$500. Saldo actual: $"));
     Serial.println(saldoIngresado);
   }
 
-  // Simulación: Si el saldo cubre el valor o si presiona P3 para forzar aprobación
-  if (saldoIngresado >= totalACobrar || boton == BOTON_P3) {
+  // Simulación: Si el saldo cubre el valor o si presiona C para forzar aprobación
+  if (saldoIngresado >= totalACobrar || boton == BOTON_C) {
     Serial.println(F("[PAGOS] Cobro completado con exito!"));
     mostrarMensajeTemporal(" Pago Exitoso!  ", " Despachando... ", 1500);
     return PAGO_EXITOSO;

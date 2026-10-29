@@ -3,13 +3,20 @@
 
 #include <Arduino.h>
 
-// Pulsadores físicos del sistema
+// Botones y acciones del sistema
+// Ahora corresponden a las teclas A, B, C, D del teclado matricial 4x4
 enum Boton {
   BOTON_NINGUNO = 0,
-  BOTON_P1,          // Pulsador 1 (Acción primaria / Iniciar / Anterior / Agregar otro)
-  BOTON_P2,          // Pulsador 2 (Siguiente)
-  BOTON_P3,          // Pulsador 3 (Confirmar producto / Ir a Pagar)
-  BOTON_PEXT         // Pulsador externo (Cancelar / Abortar en cualquier momento)
+  BOTON_A,          // Tecla A: Iniciar / Anterior / Agregar otro
+  BOTON_B,          // Tecla B: Siguiente producto
+  BOTON_C,          // Tecla C: Confirmar producto / Pagar (también tecla '#')
+  BOTON_D,          // Tecla D: Cancelar / Abortar operación (reemplaza Pext)
+
+  // Alias para mantener compatibilidad con apuntes y versiones anteriores:
+  BOTON_P1 = BOTON_A,
+  BOTON_P2 = BOTON_B,
+  BOTON_P3 = BOTON_C,
+  BOTON_PEXT = BOTON_D
 };
 
 // Estados generales de la máquina de estados finitos (FSM en main.cpp)

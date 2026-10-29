@@ -58,8 +58,8 @@ static void dibujarPantallaSeleccion() {
     snprintf(linea1, sizeof(linea1), "Total: $%7lu", 
              (unsigned long)calcularTotalCarrito());
 
-    // Línea 2: P1:+Otro P3:Pagar
-    mostrarLineas(linea1, "P1:+Otro P3:Pagar");
+    // Línea 2: A:+Otro C:Pagar
+    mostrarLineas(linea1, "A:+Otro  C:Pagar");
   }
 }
 
@@ -93,12 +93,12 @@ ResultadoSeleccion procesarSeleccion(Boton boton, char tecla) {
       pantallaSucia = true;
     } 
     else if (tecla == '#') {
-      // '#' equivale a presionar P3 (confirmar)
-      boton = BOTON_P3;
+      // '#' equivale a presionar C (confirmar)
+      boton = BOTON_C;
     }
 
-    // B. Navegación con pulsadores P1 y P2
-    if (boton == BOTON_P1) {
+    // B. Navegación con teclas A y B (anterior/siguiente)
+    if (boton == BOTON_A) {
       if (indiceActual == 0) {
         indiceActual = obtenerTotalProductos() - 1;
       } else {
@@ -107,13 +107,13 @@ ResultadoSeleccion procesarSeleccion(Boton boton, char tecla) {
       sincronizarCodigoConIndice();
       pantallaSucia = true;
     } 
-    else if (boton == BOTON_P2) {
+    else if (boton == BOTON_B) {
       indiceActual = (indiceActual + 1) % obtenerTotalProductos();
       sincronizarCodigoConIndice();
       pantallaSucia = true;
     } 
-    // C. Confirmar producto con P3
-    else if (boton == BOTON_P3) {
+    // C. Confirmar producto con tecla C (o '#')
+    else if (boton == BOTON_C) {
       if (agregarAlCarrito(indiceActual)) {
         Producto* p = obtenerProductoPorIndice(indiceActual);
         mostrarMensajeTemporal("Agregado al Ped!", p ? p->nombre : "", 1000);
@@ -126,13 +126,13 @@ ResultadoSeleccion procesarSeleccion(Boton boton, char tecla) {
   }
   // 2. Manejo en modo PREGUNTA CARRITO
   else if (submodo == SUBMODO_PREGUNTA_CARRITO) {
-    if (boton == BOTON_P1) {
+    if (boton == BOTON_A) {
       // Volver al catálogo para pedir otro producto
       submodo = SUBMODO_CATALOGO;
       sincronizarCodigoConIndice();
       pantallaSucia = true;
     } 
-    else if (boton == BOTON_P3 || tecla == '#') {
+    else if (boton == BOTON_C || tecla == '#') {
       // Pedido confirmado, entregar control al director para pasar a Cobro
       return SELECCION_LISTO_IR_A_PAGOS;
     }

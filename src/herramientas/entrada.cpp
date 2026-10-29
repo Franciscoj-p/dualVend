@@ -17,53 +17,35 @@ byte pinesColumnas[COLUMNAS] = {10, 11, 12, 13};
 
 static Keypad teclado = Keypad(makeKeymap(teclas), pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 
-// --- CONFIGURACIÓN DE LOS 4 PULSADORES ---
-const uint8_t PIN_P1   = 2;
-const uint8_t PIN_P2   = 3;
-const uint8_t PIN_P3   = 4;
-const uint8_t PIN_PEXT = 5;
+static char teclaActual = '\0';
+static unsigned long ultimoMuestreo = 0;
 
-const uint8_t pinesBotones[4] = {PIN_P1, PIN_P2, PIN_P3, PIN_PEXT};
-static uint8_t estadosEstables[4] = {HIGH, HIGH, HIGH, HIGH};
-static uint8_t ultimasLecturas[4] = {HIGH, HIGH, HIGH, HIGH};
-static unsigned long ultimoCambio[4] = {0, 0, 0, 0};
+static void muestrearTeclado() {
+  unsigned long ahora = millis();
+  if (ahora != ultimoMuestreo) {
+    ultimoMuestreo = ahora;
+    teclaActual = teclado.getKey();
+  }
+}
 
 void iniciarEntradas() {
-  for (uint8_t i = 0; i < 4; i++) {
-    pinMode(pinesBotones[i], INPUT_PULLUP);
-    estadosEstables[i] = HIGH;
-    ultimasLecturas[i] = HIGH;
-    ultimoCambio[i] = 0;
-  }
+  teclaActual = '\0';
+  ultimoMuestreo = 0;
 }
 
 char leerTeclado() {
-  char tecla = teclado.getKey();
-  return (tecla) ? tecla : '\0';
+  muestrearTeclado();
+  return (teclaActual) ? teclaActual : '\0';
 }
 
 Boton leerPulsador() {
-  for (uint8_t idx = 0; idx < 4; idx++) {
-    uint8_t lectura = digitalRead(pinesBotones[idx]);
-    
-    if (lectura != ultimasLecturas[idx]) {
-      ultimasLecturas[idx] = lectura;
-      ultimoCambio[idx] = millis();
-    }
-    
-    if ((millis() - ultimoCambio[idx] >= 35) && (estadosEstables[idx] != lectura)) {
-      estadosEstables[idx] = lectura;
-      if (lectura == LOW) {
-        switch (idx) {
-          case 0: return BOTON_P1;
-          case 1: return BOTON_P2;
-          case 2: return BOTON_P3;
-          case 3: return BOTON_PEXT;
-          default: return BOTON_NINGUNO;
-        }
-      }
-    }
+  muestrearTeclado();
+  switch (teclaActual) {
+    case 'A': return BOTON_A;
+    case 'B': return BOTON_B;
+    case 'C':
+    case '#': return BOTON_C;
+    case 'D': return BOTON_D;
+    default:  return BOTON_NINGUNO;
   }
-  return BOTON_NINGUNO;
 }
-

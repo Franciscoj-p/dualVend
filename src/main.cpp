@@ -56,10 +56,10 @@ void loop() {
   Boton boton = leerPulsador();
   char tecla = leerTeclado();
 
-  // 2. BOTÓN DE CANCELACIÓN GLOBAL (PEXT)
-  if (boton == BOTON_PEXT) {
+  // 2. BOTÓN DE CANCELACIÓN GLOBAL (TECLA D / PEXT)
+  if (boton == BOTON_D) {
     if (modoActual != MODO_BIENVENIDA) {
-      Serial.println(F("[PEXT] Operacion cancelada por el usuario"));
+      Serial.println(F("[CANCELAR] Operacion cancelada por el usuario (Tecla D)"));
       mostrarMensajeTemporal("OPERACION CANC. ", "Devolviendo saldo", 1500);
       vaciarCarrito();
       modoActual = MODO_BIENVENIDA;
@@ -74,10 +74,10 @@ void loop() {
     // --- ESTADO 1: BIENVENIDA ---
     case MODO_BIENVENIDA:
       if (!pantallaBienvenidaLista) {
-        mostrarLineas("   DUALVEND!    ", "P1 para Iniciar ");
+        mostrarLineas("   DUALVEND!    ", "A para Iniciar  ");
         pantallaBienvenidaLista = true;
       }
-      if (boton == BOTON_P1) {
+      if (boton == BOTON_A) {
         vaciarCarrito();
         iniciarSeleccion();
         modoActual = MODO_SELECCION;

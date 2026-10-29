@@ -27,32 +27,22 @@ Este documento detalla la lista de componentes, especificaciones técnicas, cone
     - **SDA:** Pin analógico **A4** (Arduino Uno).
     - **SCL:** Pin analógico **A5** (Arduino Uno).
 
-### 1.3. Dispositivos de Entrada (Pulsadores Frontales y Botón de Cancelación)
-- **Componente:** 4 Pulsadores táctiles momentáneos (Normalmente Abiertos / Push Buttons).
-- **Configuración eléctrica:** Conexión con resistencia pull-up interna (`INPUT_PULLUP`).
-  - No requiere resistencias externas adicionales.
-  - Un terminal del pulsador va al pin de Arduino; el terminal opuesto va directamente a GND.
-  - Al pulsar, el nivel lógico pasa a `LOW` (0V).
-- **Mapeo de pines actual:**
-  - **P1 (Iniciar / Anterior / Agregar otro producto):** Pin Digital **2**.
-  - **P2 (Siguiente producto):** Pin Digital **3**.
-  - **P3 (Confirmar producto / Ir a Pagar):** Pin Digital **4**.
-  - **Pext (Pulsador externo de Cancelación / Aborto general):** Pin Digital **5**.
+### 1.3. Dispositivo de Entrada Único: Teclado Matricial 4x4 (Membrana)
+Para simplificar el cableado, reducir costos y liberar pines digitales para los motores y sensores de líquidos/sólidos, **todas las entradas de usuario se realizan desde el teclado matricial 4x4**:
 
----
-
-## 2. Teclado Matricial 4x4 (Membrana)
-
-Para marcación directa del código de 2 dígitos de cada producto (ej. "01", "02", "03"):
-
-- **Componente:** Teclado matricial de membrana 4x4 (16 teclas: '0'..'9', 'A'..'D', '*', '#').
-- **Conexión directa en Arduino Uno:**
+- **Componente:** Teclado matricial de membrana 4x4 (16 teclas).
+- **Conexión en Arduino Uno:**
   - **Filas (R1 a R4):** Pines Digitales **6, 7, 8, 9**.
   - **Columnas (C1 a C4):** Pines Digitales **10, 11, 12, 13**.
-- **Equivalencias de teclas rápidas:**
-  - Las teclas `'0'` a `'9'` marcan el código del producto directamente.
-  - La tecla `'*'` limpia o borra el código que se estaba digitando.
-  - La tecla `'#'` equivale al pulsador **P3** (confirmar).
+- **Mapeo de Funciones del Teclado:**
+  - **Dígitos `'0'` a `'9'`:** Marcación directa del código de producto ("01", "02", "03").
+  - **Tecla `'*'`:** Limpiar / Corregir código tecleado.
+  - **Tecla `'A'` (antes P1):** Iniciar compra / Producto anterior / Pedir otro producto.
+  - **Tecla `'B'` (antes P2):** Producto siguiente.
+  - **Tecla `'C'` (antes P3 / también `'#'`):** Confirmar producto / Proceder a Pagar.
+  - **Tecla `'D'` (antes Pext):** Cancelar / Abortar operación en cualquier momento.
+
+> **Ventaja de Ingeniería:** Los Pines Digitales **2, 3, 4 y 5** quedan completamente liberados para el control de relés, puente H de motores, y para las interrupciones externas (`INT0` en pin 2 y `INT1` en pin 3) del caudalímetro o monedero.
 
 ---
 

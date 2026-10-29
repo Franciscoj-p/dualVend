@@ -27,7 +27,7 @@ struct Producto {
 - `int8_t buscarIndicePorCodigo(const char* codigo)`: Busca un código tecleado (ej. `"01"`) y retorna su índice (o `-1` si no existe).
 - `bool agregarAlCarrito(uint8_t indice)`: Incrementa en 1 la cantidad pedida si hay stock disponible.
 - `uint32_t calcularTotalCarrito()`: Suma total en pesos a cobrar para el módulo de Pagos.
-- `void vaciarCarrito()`: Restaura el carrito a 0 unidades sin alterar el stock (si el usuario cancela con `Pext`).
+- `void vaciarCarrito()`: Restaura el carrito a 0 unidades sin alterar el stock (si el usuario cancela con Tecla `D`).
 - `void descontarStockVendido()`: Descuenta definitivamente las unidades del inventario tras la entrega física exitosa.
 
 ---
@@ -38,8 +38,8 @@ struct Producto {
   - `mostrarLineas(linea1, linea2)`: Muestra dos líneas en el LCD 16x2.
   - `mostrarMensajeTemporal(linea1, linea2, duracionMs)`: Muestra un mensaje con pausa automática.
 - **Entradas (`entrada.h`):**
-  - `leerPulsador()`: Devuelve `BOTON_P1`, `BOTON_P2`, `BOTON_P3`, `BOTON_PEXT` o `BOTON_NINGUNO`.
-  - `leerTeclado()`: Devuelve el caracter del teclado matricial (`'0'..'9'`, `'*'`, `'#'`) o `'\0'`.
+  - `leerPulsador()`: Devuelve `BOTON_A`, `BOTON_B`, `BOTON_C`, `BOTON_D` o `BOTON_NINGUNO` (según las teclas del teclado 4x4).
+  - `leerTeclado()`: Devuelve el caracter del teclado matricial (`'0'..'9'`, `'A'..'D'`, `'*'`, `'#'`) o `'\0'`.
 
 ---
 
@@ -49,10 +49,10 @@ El módulo de selección controla su propia pantalla LCD y su lógica interna de
 
 - `void iniciarSeleccion()`: Se invoca al entrar a `MODO_SELECCION`. Prepara el cursor en el primer producto.
 - `ResultadoSeleccion procesarSeleccion(Boton boton, char tecla)`:
-  - Maneja la navegación con P1/P2 y la marcación directa en el teclado matricial.
-  - Pregunta si desea agregar otro producto o ir a pagar.
+  - Maneja la navegación con Tecla A (anterior), Tecla B (siguiente) y la marcación directa de códigos numéricos en el teclado matricial.
+  - Pregunta si desea agregar otro producto (A) o ir a pagar (C).
   - Retorna `SELECCION_EN_CURSO` mientras el usuario elija productos.
-  - Retorna `SELECCION_LISTO_IR_A_PAGOS` cuando el usuario confirma con P3 en la pantalla de carrito.
+  - Retorna `SELECCION_LISTO_IR_A_PAGOS` cuando el usuario confirma con C en la pantalla de carrito.
 
 ---
 
