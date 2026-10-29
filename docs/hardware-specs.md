@@ -59,18 +59,14 @@ Para marcación directa del código de 2 dígitos de cada producto (ej. "01", "0
 ## 3. Componentes para Fases Futuras (Dispensación y Pagos Físicos)
 
 ### 3.1. Subsistema de Entrega de Sólidos (Snacks)
-- **Motorreductores:** Motor DC 12V con caja reductora (ej. 30 a 60 RPM, alto torque) acoplado al eje de espirales de acero continuo.
-- **Microswitches de fin de carrera:** Interruptores mecánicos con palanca o rodillo para detectar el ciclo completo de 360° y detener el motor con precisión.
-- **Etapa de potencia y aislamiento:** Módulo de relés de 5V optoacoplados de 4 u 8 canales, o transistores MOSFET N (ej. IRLZ44N) con diodos flyback (1N4007) para absorber picos inductivos.
+...
 
 ### 3.2. Subsistema de Entrega de Líquidos (Bebidas)
-- **Bomba Peristáltica 12V:** Bomba sanitaria con manguera de silicona grado alimenticio (evita contaminación cruzada y contacto directo con piezas mecánicas).
-- **Electroválvula 12V:** Válvula solenoide normalmente cerrada para sellado instantáneo anti-goteo al finalizar el servido.
-- **Caudalímetro de efecto Hall:** Sensor de flujo con turbina (ej. YF-S201 o modelo micrométrico de bajo flujo). Emite pulsos por mililitro servido. Conexión obligatoria al Pin Digital **2** (interrupción externa `INT0` de Arduino Uno).
+...
 
 ### 3.3. Subsistema de Monedero y Tarjetas Sin Contacto
-- **Lector NFC / RFID:** Módulo PN532 (vía I2C en A4/A5 o bus SPI).
-- **Monedero electrónico multimoneda:** Validador programable (ej. CH-926) que reconoce monedas de \$500 y \$1.000 y envía trenes de pulsos digitales a Arduino.
+- **Lector NFC / RFID:** ...
+- **Monedero electrónico multimoneda:** ...
 
 ---
 

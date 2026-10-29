@@ -1,12 +1,17 @@
 #include "inventario.h"
 
-// Definición de catálogo inicial
+// ==============================================================================
+// [CONFIGURACIÓN DEL CATÁLOGO FÍSICO DE LA MÁQUINA]
+// Puedes cambiar los productos, precios, códigos, stock inicial o agregar más.
+// Si agregas más productos, asegúrate de actualizar TOTAL_PRODUCTOS.
+// ==============================================================================
 static const uint8_t TOTAL_PRODUCTOS = 3;
 
 static Producto catalogo[TOTAL_PRODUCTOS] = {
-  {"01", "Papas",    1000, TIPO_SOLIDO,  5, 0},
-  {"02", "Galletas", 2500, TIPO_SOLIDO,  5, 0},
-  {"03", "Gaseosa",  2000, TIPO_LIQUIDO, 5, 0}
+  // Código, Nombre,      Precio, Tipo de entrega, Stock inicial, Carrito
+  {"01",    "Papas",     1000,   TIPO_SOLIDO,     5,             0},
+  {"02",    "Galletas",  2500,   TIPO_SOLIDO,     5,             0},
+  {"03",    "Gaseosa",   2000,   TIPO_LIQUIDO,    5,             0}
 };
 
 void iniciarInventario() {

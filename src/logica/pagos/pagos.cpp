@@ -1,7 +1,7 @@
 #include "pagos.h"
 #include "herramientas/pantalla.h"
 
-// Variables internas del estado de pago
+// Variables internas del estado de cobro
 static uint32_t totalACobrar = 0;
 static uint32_t saldoIngresado = 0;
 static bool pantallaSucia = true;
@@ -22,6 +22,11 @@ uint32_t obtenerSaldoIngresado() {
   return saldoIngresado;
 }
 
+// ==============================================================================
+// [PLACEHOLDER 1: PANTALLA DE PAGOS]
+// Responsable: Integrante de Pagos
+// Aquí puedes personalizar cómo quieres que el LCD 16x2 muestre el saldo al usuario.
+// ==============================================================================
 static void dibujarPantallaPagos() {
   if (!pantallaSucia) return;
   pantallaSucia = false;
@@ -32,20 +37,34 @@ static void dibujarPantallaPagos() {
   // Línea 1: Cobro: $3500
   snprintf(linea1, sizeof(linea1), "Cobro: $%7lu", (unsigned long)totalACobrar);
 
-  // Línea 2: Saldo:$1000 P3:Ok (o guía de simulación)
+  // Línea 2: Saldo:$1000 P3:Ok (o el texto que desees mostrar)
   snprintf(linea2, sizeof(linea2), "Sal:$%-4lu  P3:Ok", (unsigned long)saldoIngresado);
 
   mostrarLineas(linea1, linea2);
 }
 
+// ==============================================================================
+// [PLACEHOLDER 2: LÓGICA DE COBRO Y ENTRADA DE DINERO]
+// Responsable: Integrante de Pagos
+// 
+// IMPLEMENTACIÓN ACTUAL (SIMULACIÓN TEMPORAL):
+// - Pulsar P1 o la tecla '1' simula el ingreso de $500 pesos.
+// - Pulsar P3 simula la aprobación inmediata del pago.
+// 
+// CÓMO REEMPLAZAR ESTE BLOQUE CUANDO TENGAS EL HARDWARE REAL:
+// 1. Si usas monedero mecánico o electrónico por pulsos:
+//    - Lee los pulsos (por interrupción o digitalRead) y suma al 'saldoIngresado'.
+// 2. Si usas billetero o validador serial:
+//    - Lee la trama serial, valida el billete y suma su denominación.
+// 3. Si usas RFID / Tarjeta NFC (RC522):
+//    - Lee el UID / saldo de la tarjeta, verifica si saldo >= totalACobrar y descuenta.
+// 4. Cuando el pago esté listo:
+//    - Muestra tu mensaje en LCD y retorna PAGO_EXITOSO.
+// 5. Si el usuario cancela o se acaba el tiempo de espera:
+//    - Devuelve el saldo ingresado físicamente y retorna PAGO_CANCELADO.
+// ==============================================================================
 ResultadoPago procesarPago(Boton boton, char tecla) {
-  // ----------------------------------------------------------------------------
-  // SIMULACIÓN DE PAGO TEMPORAL (Para ser reemplazada por el integrante de Pagos)
-  // ----------------------------------------------------------------------------
-  // - Pulsar P1 o la tecla '1' simula el ingreso de $500 pesos.
-  // - Pulsar P3 aprueba el pago inmediatamente si ya cubre el costo (o forzado para prueba).
-  // ----------------------------------------------------------------------------
-
+  // Simulación con pulsador P1 o tecla '1' (+ $500)
   if (boton == BOTON_P1 || tecla == '1') {
     saldoIngresado += 500;
     pantallaSucia = true;
@@ -53,9 +72,9 @@ ResultadoPago procesarPago(Boton boton, char tecla) {
     Serial.println(saldoIngresado);
   }
 
-  // Si el saldo ingresado ya cubre el total, o si presiona P3 para simular aprobación
+  // Simulación: Si el saldo cubre el valor o si presiona P3 para forzar aprobación
   if (saldoIngresado >= totalACobrar || boton == BOTON_P3) {
-    Serial.println(F("[PAGOS] Cobro cubierto exitosamente!"));
+    Serial.println(F("[PAGOS] Cobro completado con exito!"));
     mostrarMensajeTemporal(" Pago Exitoso!  ", " Despachando... ", 1500);
     return PAGO_EXITOSO;
   }
