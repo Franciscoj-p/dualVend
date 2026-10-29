@@ -43,21 +43,21 @@ static void dibujarPantallaSeleccion() {
   if (submodo == SUBMODO_CATALOGO) {
     Producto* p = obtenerProductoPorIndice(indiceActual);
     
-    // Fila 0: Cabecera
-    snprintf(linea1, sizeof(linea1), "== SELECCIONAR ==");
-
-    // Fila 1: Cod:[01] Papas  $1000
-    snprintf(linea2, sizeof(linea2), "Cod:[%-2s] %-7s$%5lu", 
+    // Fila 0: Código y Nombre del producto (hasta 11 letras sin cortarse)
+    snprintf(linea1, sizeof(linea1), "Cod:[%-2s] %-11s", 
              bufferCodigo, 
-             p ? p->nombre : "???", 
+             p ? p->nombre : "???");
+
+    // Fila 1: Precio unitario completo (sin recortes de columnas)
+    snprintf(linea2, sizeof(linea2), "Precio:  $%lu", 
              p ? (unsigned long)p->precio : 0UL);
 
-    // Fila 2: Disp:5   En Pedido:0
-    snprintf(linea3, sizeof(linea3), "Disp:%-2u   Carrito:%-2u", 
+    // Fila 2: Disponibilidad y lo que lleva agregado en el pedido
+    snprintf(linea3, sizeof(linea3), "Disp: %-2u  Carrito: %-2u", 
              obtenerStockDisponible(indiceActual),
              p ? p->enCarrito : 0);
 
-    // Fila 3: Botones de ayuda
+    // Fila 3: Botones de ayuda para el usuario
     snprintf(linea4, sizeof(linea4), "P1:Ant P2:Sig P3:Add");
 
     mostrarLineas(linea1, linea2, linea3, linea4);
