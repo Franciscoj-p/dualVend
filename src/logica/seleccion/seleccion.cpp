@@ -35,31 +35,40 @@ static void dibujarPantallaSeleccion() {
   if (!pantallaSucia) return;
   pantallaSucia = false;
 
-  char linea1[17];
-  char linea2[17];
+  char linea1[21];
+  char linea2[21];
+  char linea3[21];
+  char linea4[21];
 
   if (submodo == SUBMODO_CATALOGO) {
     Producto* p = obtenerProductoPorIndice(indiceActual);
     
-    // Línea 1: Cod:[01]  $1000
-    snprintf(linea1, sizeof(linea1), "Cod:%-2s   $%5lu", 
+    // Fila 0: Cabecera
+    snprintf(linea1, sizeof(linea1), "== SELECCIONAR ==");
+
+    // Fila 1: Cod:[01] Papas  $1000
+    snprintf(linea2, sizeof(linea2), "Cod:[%-2s] %-7s$%5lu", 
              bufferCodigo, 
+             p ? p->nombre : "???", 
              p ? (unsigned long)p->precio : 0UL);
 
-    // Línea 2: Papas   Disp:5
-    snprintf(linea2, sizeof(linea2), "%-9s Disp:%-2u", 
-             p ? p->nombre : "???", 
-             obtenerStockDisponible(indiceActual));
+    // Fila 2: Disp:5   En Pedido:0
+    snprintf(linea3, sizeof(linea3), "Disp:%-2u   Carrito:%-2u", 
+             obtenerStockDisponible(indiceActual),
+             p ? p->enCarrito : 0);
 
-    mostrarLineas(linea1, linea2);
+    // Fila 3: Botones de ayuda
+    snprintf(linea4, sizeof(linea4), "P1:Ant P2:Sig P3:Add");
+
+    mostrarLineas(linea1, linea2, linea3, linea4);
   } 
   else if (submodo == SUBMODO_PREGUNTA_CARRITO) {
-    // Línea 1: Total: $3500
-    snprintf(linea1, sizeof(linea1), "Total: $%7lu", 
-             (unsigned long)calcularTotalCarrito());
+    snprintf(linea1, sizeof(linea1), "=== TU CARRITO ===");
+    snprintf(linea2, sizeof(linea2), "Items: %-2u unidades", calcularCantidadTotalCarrito());
+    snprintf(linea3, sizeof(linea3), "Total: $%7lu", (unsigned long)calcularTotalCarrito());
+    snprintf(linea4, sizeof(linea4), "P1:+Otro    P3:Pagar");
 
-    // Línea 2: P1:+Otro P3:Pagar
-    mostrarLineas(linea1, "P1:+Otro P3:Pagar");
+    mostrarLineas(linea1, linea2, linea3, linea4);
   }
 }
 
@@ -116,10 +125,12 @@ ResultadoSeleccion procesarSeleccion(Boton boton, char tecla) {
     else if (boton == BOTON_P3) {
       if (agregarAlCarrito(indiceActual)) {
         Producto* p = obtenerProductoPorIndice(indiceActual);
-        mostrarMensajeTemporal("Agregado al Ped!", p ? p->nombre : "", 1000);
+        char msg[21];
+        snprintf(msg, sizeof(msg), "+1 %s", p ? p->nombre : "");
+        mostrarMensajeTemporal(" Producto Agregado! ", msg, 1200, "Agregado a tu pedido", "Espere un momento...");
         submodo = SUBMODO_PREGUNTA_CARRITO;
       } else {
-        mostrarMensajeTemporal("Sin Stock Disp! ", "Elija otro...   ", 1500);
+        mostrarMensajeTemporal("  SIN STOCK DISP!   ", "  Elija otro item   ", 1500, "No quedan disponibles", "");
       }
       pantallaSucia = true;
     }

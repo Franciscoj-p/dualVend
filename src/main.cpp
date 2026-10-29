@@ -29,7 +29,7 @@ static void ejecutarEntregaProductos() {
   }
   // Una vez entregado todo, se descuenta del inventario y se despide
   descontarStockVendido();
-  mostrarMensajeTemporal("   DUALVEND!    ", "Vuelva pronto   ", 1500);
+  mostrarMensajeTemporal("====================", "   MUCHAS GRACIAS   ", 1800, "  POR SU COMPRA!    ", "====================");
 }
 
 void setup() {
@@ -48,7 +48,7 @@ void setup() {
 
   modoActual = MODO_BIENVENIDA;
   pantallaBienvenidaLista = false;
-  Serial.println(F("[SISTEMA] DualVend listo para operar"));
+  Serial.println(F("[SISTEMA] DualVend listo para operar con LCD 20x4"));
 }
 
 void loop() {
@@ -60,7 +60,7 @@ void loop() {
   if (boton == BOTON_PEXT) {
     if (modoActual != MODO_BIENVENIDA) {
       Serial.println(F("[PEXT] Operacion cancelada por el usuario"));
-      mostrarMensajeTemporal("OPERACION CANC. ", "Devolviendo saldo", 1500);
+      mostrarMensajeTemporal(" OPERACION CANCEL.  ", " Devolviendo saldo  ", 1500, " Retire su dinero   ", " Vuelva a intentar  ");
       vaciarCarrito();
       modoActual = MODO_BIENVENIDA;
       pantallaBienvenidaLista = false;
@@ -74,7 +74,10 @@ void loop() {
     // --- ESTADO 1: BIENVENIDA ---
     case MODO_BIENVENIDA:
       if (!pantallaBienvenidaLista) {
-        mostrarLineas("   DUALVEND!    ", "P1 para Iniciar ");
+        mostrarLineas("********************",
+                      "    DUALVEND 2.0    ",
+                      "  Snacks & Bebidas  ",
+                      " P1: Iniciar Compra ");
         pantallaBienvenidaLista = true;
       }
       if (boton == BOTON_P1) {

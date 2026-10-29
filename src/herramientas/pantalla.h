@@ -3,17 +3,17 @@
 
 #include <Arduino.h>
 
-// Inicializa la pantalla LCD 16x2 I2C
+// Inicializa la pantalla LCD 20x4 I2C
 void iniciarPantalla();
 
-// Muestra dos líneas de texto en la pantalla (máximo 16 caracteres por línea)
-void mostrarLineas(const char* linea1, const char* linea2);
+// Muestra hasta 4 líneas de texto en la pantalla (máximo 20 caracteres por línea)
+// Permite llamar con 2, 3 o 4 líneas gracias a los valores por defecto.
+void mostrarLineas(const char* l1, const char* l2, const char* l3 = "", const char* l4 = "");
 
 // Limpia el contenido de la pantalla LCD
 void limpiarPantalla();
 
-// Muestra dos líneas y espera un tiempo determinado (en milisegundos)
-void mostrarMensajeTemporal(const char* linea1, const char* linea2, unsigned int tiempoMs);
+// Muestra hasta 4 líneas y espera un tiempo determinado (en milisegundos)
+void mostrarMensajeTemporal(const char* l1, const char* l2, unsigned int tiempoMs, const char* l3 = "", const char* l4 = "");
 
 #endif
-
