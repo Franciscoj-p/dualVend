@@ -85,3 +85,4 @@ void descontarStockVendido() {
     catalogo[i].enCarrito = 0;
   }
 }
+
